@@ -4,6 +4,20 @@ serverName = 'localhost'
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 
+class Warrior:
+    username: str
+    password: str
+    lives: int = 2
+    #avatar
+    sword: int = -1
+    sheild: int = -1
+    slayingPotion: int = -1
+    healingPotion: int = -1
+    firstTimeLogin: bool = True
+
+warrior = Warrior()
+
+clientSocket.sendto("login".encode(), (serverName, serverPort))
 waitingForUsername = True
 while waitingForUsername:
     print('Enter username:')
@@ -11,6 +25,7 @@ while waitingForUsername:
     clientSocket.sendto(usernameInput.encode(), (serverName, serverPort))
     loginResponse, serverAddress = clientSocket.recvfrom(2048)
     if loginResponse.decode() == "Username found!":
+        warrior.username = usernameInput
         waitingForUsername = False
     else:
         print(loginResponse.decode())
@@ -19,6 +34,7 @@ waitingForPassword = True
 while waitingForPassword:
     print('Enter password:')
     passwordInput = input()
+    warrior.password = passwordInput
     clientSocket.sendto(passwordInput.encode(), (serverName, serverPort))
     loginResponse, serverAddress = clientSocket.recvfrom(2048)
     if loginResponse.decode() == "Password correct!":
@@ -44,6 +60,7 @@ while firstTimeLogin:
         if response_text.startswith("Invalid sword strength"):
             print(response_text)
             continue
+        warrior.sword = int(swordStrength)
         # next prompt from server is shield
         sheild_prompt = response_text
         break
@@ -58,6 +75,7 @@ while firstTimeLogin:
         if response_text.startswith("Invalid sheild strength"):
             print(response_text)
             continue
+        warrior.sheild = int(sheildStrength)
         slaying_prompt = response_text
         break
 
@@ -71,6 +89,7 @@ while firstTimeLogin:
         if response_text.startswith("Invalid slaying potion strength"):
             print(response_text)
             continue
+        warrior.slayingPotion = int(slayingPotionStrength)
         healing_prompt = response_text
         break
 
@@ -84,6 +103,7 @@ while firstTimeLogin:
         if response_text.startswith("Invalid healing potion strength"):
             print(response_text)
             continue
+        warrior.healingPotion = int(healingPotionStrength)
 
         # reached final verification response (total strength check)
         if response_text.startswith("Total strength is not 10"):
@@ -98,6 +118,19 @@ while firstTimeLogin:
         print(response_text)
         firstTimeLogin = False
         break
+
+def listUsers():
+    nextUser, serverAddress = clientSocket.recvfrom(2048)
+    while nextUser.decode() != "No more users":
+        print(nextUser.decode())
+        nextUser, serverAddress = clientSocket.recvfrom(2048)
+
+while True:
+    print("Type number to select choice \n1. List active users \n2. Download another player's avatar \n3. Request a fight\n4. List users and their states")
+    choice = input()
+    clientSocket.sendto(choice.encode(), (serverName, serverPort))
+    if choice == "1":
+        listUsers()
 
 #message = input('Input lowercase sentence:')
 #clientSocket.sendto(message.encode(),(serverName, serverPort))
