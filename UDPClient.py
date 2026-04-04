@@ -10,7 +10,7 @@ class Warrior:
     lives: int = 2
     #avatar
     sword: int = -1
-    sheild: int = -1
+    shield: int = -1
     slayingPotion: int = -1
     healingPotion: int = -1
     firstTimeLogin: bool = True
@@ -62,20 +62,20 @@ while firstTimeLogin:
             continue
         warrior.sword = int(swordStrength)
         # next prompt from server is shield
-        sheild_prompt = response_text
+        shield_prompt = response_text
         break
 
-    # sheild prompt + validation
+    # shield prompt + validation
     while True:
-        print(sheild_prompt)
-        sheildStrength = input()
-        clientSocket.sendto(sheildStrength.encode(), (serverName, serverPort))
+        print(shield_prompt)
+        shieldStrength = input()
+        clientSocket.sendto(shieldStrength.encode(), (serverName, serverPort))
         response, serverAddress = clientSocket.recvfrom(2048)
         response_text = response.decode()
-        if response_text.startswith("Invalid sheild strength"):
+        if response_text.startswith("Invalid shield strength"):
             print(response_text)
             continue
-        warrior.sheild = int(sheildStrength)
+        warrior.shield = int(shieldStrength)
         slaying_prompt = response_text
         break
 
@@ -125,15 +125,58 @@ def listUsers():
         print(nextUser.decode())
         nextUser, serverAddress = clientSocket.recvfrom(2048)
 
+def fight():
+    initiator = warrior.username
+    clientSocket.sendto(initiator.encode(), (serverName, serverPort))
+    print("Enter username of player you want to fight:")
+    opponent = input()
+    clientSocket.sendto(opponent.encode(), (serverName, serverPort))
+    fightResponse, serverAddress = clientSocket.recvfrom(2048)
+    fightResponseText = fightResponse.decode()
+    
+    if fightResponseText == "Fight request sent":
+        print("Select weapon:\n 1. Sword\n 2. Slaying Potion")
+        weaponChoice = input().strip()
+        clientSocket.sendto(weaponChoice.encode(), (serverName, serverPort))
+        fightOutcome, serverAddress = clientSocket.recvfrom(2048)
+        fightOutcomeText = fightOutcome.decode()
+        
+        if fightOutcomeText == "Tie":
+            warrior.lives -= 1
+        elif fightOutcomeText == "Win":
+            warrior.lives += 1
+        elif fightOutcomeText == "Lose":
+            warrior.lives -= 1
+        
+        print(fightOutcomeText, "You have " + str(warrior.lives) + " lives remaining.")
+        newPowerMessage, serverAddress = clientSocket.recvfrom(2048)
+        newPowerText = newPowerMessage.decode()
+        if newPowerText.startswith("sword:"):
+            warrior.sword = int(newPowerText.split(":", 1)[1])
+            print("Your sword strength is now", warrior.sword)
+        elif newPowerText.startswith("slaying:"):
+            warrior.slayingPotion = int(newPowerText.split(":", 1)[1])
+            print("Your slaying potion strength is now", warrior.slayingPotion)
+        else:
+            print(newPowerText)
+    else:
+        print(fightResponseText)
+    return
+
+
 while True:
     print("Type number to select choice \n1. List active users \n2. Download another player's avatar \n3. Request a fight\n4. List users and their states")
     choice = input()
     clientSocket.sendto(choice.encode(), (serverName, serverPort))
     if choice == "1":
         listUsers()
+    if choice == "3":
+        fight()
+        
 
 #message = input('Input lowercase sentence:')
 #clientSocket.sendto(message.encode(),(serverName, serverPort))
 #modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
 #print (modifiedMessage.decode())
 clientSocket.close()
+
