@@ -125,9 +125,20 @@ def listUsers():
         print(nextUser.decode())
         nextUser, serverAddress = clientSocket.recvfrom(2048)
 
+
+
+
 def fight():
     initiator = warrior.username
     clientSocket.sendto(initiator.encode(), (serverName, serverPort))
+    print(f'''
+__________________________________________________________________________
+| Active User | sword | shield | slaying-potion | healing-potion | lives |      
+| A           | {warrior.sword}      | {warrior.shield}     | {warrior.slayingPotion}              | {warrior.healingPotion}             | {warrior.lives}     |
+| B           |
+| C           |
+|_________________________________________________________________________
+''')
     print("Enter username of player you want to fight:")
     opponent = input()
     clientSocket.sendto(opponent.encode(), (serverName, serverPort))
