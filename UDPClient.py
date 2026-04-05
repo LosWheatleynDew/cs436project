@@ -172,6 +172,14 @@ __________________________________________________________________________
             print(newPowerText)
     else:
         print(fightResponseText)
+    print(f'''
+__________________________________________________________________________
+| Active User | sword | shield | slaying-potion | healing-potion | lives |      
+| A           | {warrior.sword}      | {warrior.shield}     | {warrior.slayingPotion}              | {warrior.healingPotion}             | {warrior.lives}     |
+| B           |
+| C           |
+|_________________________________________________________________________
+''')
     return
 
 
