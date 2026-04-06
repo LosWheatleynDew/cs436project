@@ -25,7 +25,7 @@ users = { #list of users
 fightRequests = [] #list of fight requests (currently not really used)
 print ('The server is ready to receive')
 
-def login(): #function to handle user login and avatar setup
+def login(): #function to handle user login and avatar setup.
     waitingForUsername = True
     while waitingForUsername: #loop until valid username is received
         usernameInput, clientAddress = serverSocket.recvfrom(2048)
@@ -70,6 +70,7 @@ def login(): #function to handle user login and avatar setup
             else: #if sword strength input is not a digit between 0 and 3, send error message and loop again for new sword strength input
                 serverSocket.sendto("Invalid sword strength. Please enter a number between 0 and 3:".encode(), clientAddress)
         shieldSetup = False
+        serverSocket.sendto("Input shield strength:".encode(), clientAddress)
         while not shieldSetup: #loop until valid shield strength input is received
             shieldInput, clientAddress = serverSocket.recvfrom(2048)
             if shieldInput.decode().strip().isdigit() and 0 <= int(shieldInput.decode().strip()) <= 3: #if shield strength input is a digit between 0 and 3, set shield strength for the user and break loop
@@ -78,6 +79,7 @@ def login(): #function to handle user login and avatar setup
             else: #if shield strength input is not a digit between 0 and 3, send error message and loop again for new shield strength input
                 serverSocket.sendto("Invalid shield strength. Please enter a number between 0 and 3:".encode(), clientAddress)
         slayingPotionSetup = False
+        serverSocket.sendto("Input slaying potion strength:".encode(), clientAddress)
         while not slayingPotionSetup: #loop until valid slaying potion strength input is received
             slayingPotionInput, clientAddress = serverSocket.recvfrom(2048)
             if slayingPotionInput.decode().strip().isdigit() and 0 <= int(slayingPotionInput.decode().strip()) <= 3: #if slaying potion strength input is a digit between 0 and 3, set slaying potion strength for the user and break loop
@@ -86,6 +88,7 @@ def login(): #function to handle user login and avatar setup
             else: #if slaying potion strength input is not a digit between 0 and 3, send error message and loop again for new slaying potion strength input
                 serverSocket.sendto("Invalid slaying potion strength. Please enter a number between 0 and 3:".encode(), clientAddress)
         healingPotionSetup = False
+        serverSocket.sendto("Input healing potion strength:".encode(), clientAddress)
         while not healingPotionSetup: #loop until valid healing potion strength input is received
             healingPotionInput, clientAddress = serverSocket.recvfrom(2048)
             if healingPotionInput.decode().strip().isdigit() and 0 <= int(healingPotionInput.decode().strip()) <= 3: #if healing potion strength input is a digit between 0 and 3, set healing potion strength for the user and break loop
@@ -220,3 +223,4 @@ while True: #main server loop to receive commands from clients and call appropri
         fight(clientAddress)
     elif command == "5": #if command is "5", call printTable function
         printTable(clientAddress)
+
