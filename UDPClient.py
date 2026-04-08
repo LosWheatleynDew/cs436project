@@ -55,6 +55,7 @@ else: #if not first time login, set warrior stats based on server data and skip 
     warrior.shield = int(statsParts[1].split(":")[1])
     warrior.slayingPotion = int(statsParts[2].split(":")[1])
     warrior.healingPotion = int(statsParts[3].split(":")[1])
+    clientSocket.recvfrom(2048) # flush the value after putting in the values
 while firstTimeLogin: #setting stats
     while True: #sword prompt + validation
         prompt, serverAddress = clientSocket.recvfrom(2048)
@@ -126,11 +127,13 @@ while firstTimeLogin: #setting stats
         break
 
 def listUsers(): #function to list active users
+    printTable()
+    ''' #I believe you don't need this anymore as you can just call print table of active users
     nextUser, serverAddress = clientSocket.recvfrom(2048)
     while nextUser.decode() != "No more users": #if next user message is not "No more users", print user data and loop again for next user message
         print(nextUser.decode())
         nextUser, serverAddress = clientSocket.recvfrom(2048)
-
+    '''
 
 
 

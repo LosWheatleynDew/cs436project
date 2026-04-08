@@ -106,10 +106,14 @@ def login(): #function to handle user login and avatar setup.
     else: #if not first time login, just send current stats
         serverSocket.sendto(f"{warriorLoggingIn.sword}:{warriorLoggingIn.shield}:{warriorLoggingIn.slayingPotion}:{warriorLoggingIn.healingPotion}".encode(), clientAddress)
 
+#changes: make it like printTable()
 def listUsers(clientAddress): #function to send list of active users to client.
     for x in users: #loop through users and send username of each user with lives > 0 and sword != -1
+        print("Debug: VSVal")
         if(users[x].lives > 0 and users[x].sword != -1): #if user has more than 0 lives and has set up avatar (sword strength is not -1), send username to client
-            serverSocket.sendto(users[x].username.encode(), clientAddress)
+            print("Debug: usr[x]: " + str(users[x]))
+            tableRow = f"| {users[x].username}           | {users[x].sword}      | {users[x].shield}     | {users[x].slayingPotion}              | {users[x].healingPotion}             | {users[x].lives}     |"
+            serverSocket.sendto(tableRow.encode(), clientAddress)
     serverSocket.sendto("No more users".encode(), clientAddress)
 
 def fight(clientAddress): #function to handle fight requests
